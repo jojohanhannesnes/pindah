@@ -1,62 +1,73 @@
-use std::path::PathBuf;
+/*
+    Pindah dan Simpan
+    Pindah untuk move
+    Simpan untuk save
 
-use clap::{Parser, Subcommand};
+    Contoh:
+    pindah save {name} -> (coding)
+    pindah move coding
 
-#[derive(Parser)]
-#[command(author, version, about, long_about = None)]
-struct Cli {
-    name: Option<String>,
-    #[arg(short, long, value_name = "FILE")]
-    config: Option<PathBuf>,
-    #[arg(short, long, action = clap::ArgAction::Count)]
-    debug: u8,
-    #[command(subcommand)]
-    command: Option<Commands>,
+*/
+use clap::{Parser, ValueEnum};
+use std::env;
+use std::fs::{File, OpenOptions};
+use std::io::Write;
+use std::path::{Path, PathBuf};
+#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
+enum Command {
+    Save,
+    Move,
 }
-
-#[derive(Subcommand)]
-enum Commands {
-    /// does testing things
-    Test {
-        /// lists test values
-        #[arg(short, long)]
-        list: bool,
-    },
+#[derive(Parser)]
+struct Pindah {
+    /// available command is save or move
+    #[arg(value_enum)]
+    command: Command,
+    attribute: String,
 }
 
 fn main() {
-    let cli = Cli::parse();
-
-    // You can check the value provided by positional arguments, or option arguments
-    if let Some(name) = cli.name.as_deref() {
-        println!("Value for name: {name}");
+    let home = find_home_directory();
+    let config_file = generate_config(&home);
+    let pindah = Pindah::parse();
+    match pindah.command {
+        Command::Save => save(&pindah.attribute, &config_file),
+        Command::Move => move_to(&pindah.attribute),
     }
+}
 
-    if let Some(config_path) = cli.config.as_deref() {
-        println!("Value for config: {}", config_path.display());
-    }
-
-    // You can see how many times a particular flag or argument occurred
-    // Note, only flags can have multiple occurrences
-    match cli.debug {
-        0 => println!("Debug mode is off"),
-        1 => println!("Debug mode is kind of on"),
-        2 => println!("Debug mode is on"),
-        _ => println!("Don't be crazy"),
-    }
-
-    // You can check for the existence of subcommands, and if found use their
-    // matches just as you would the top level cmd
-    match &cli.command {
-        Some(Commands::Test { list }) => {
-            if *list {
-                println!("Printing testing lists...");
-            } else {
-                println!("Not printing testing lists...");
-            }
+fn save(directory_name: &str, mut config: &File) {
+    let current_dir = env::current_dir().unwrap();
+    let configuration = format!("{}={}", directory_name, current_dir.to_str().unwrap());
+    match writeln!(config, "{}", configuration) {
+        Ok(_) => {
+            println!("Success saving {}", configuration);
         }
-        None => {}
+        Err(e) => {
+            eprintln!("Cannot write to file {}", e);
+        }
     }
+}
 
-    // Continued program logic goes here...
+fn move_to(_directory_name: &str) {
+    env::set_current_dir("/").unwrap();
+}
+
+fn generate_config(config_path: &PathBuf) -> File {
+    let is_config_exists = Path::new(&config_path).exists();
+    if !is_config_exists {
+        File::create(config_path).expect("Error creating .config file")
+    } else {
+        OpenOptions::new()
+            .append(true)
+            .read(true)
+            .open(config_path)
+            .expect("Error opening config file")
+    }
+}
+
+fn find_home_directory() -> PathBuf {
+    let mut home = PathBuf::from(env::var("HOME").expect("cannot read home dir"));
+    home.push(".pindah");
+    home
 }
