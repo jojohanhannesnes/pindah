@@ -4,19 +4,22 @@ export PATH="$PATH:/path/to/release"
 function {{alias}}() {
 if [ $# -ge 2 ]
     first_argument="$1"
-    # shift # Remove the first argument from the list
-
     if [ "$first_argument" = "move" ]; then
-        # Execute the move action with the remaining arguments
-        pindah "$@"
-        cd "$2"
-        # Replace the 'echo' line with your actual move logic
+        message=$(pindah "$@")
+        move_status=$?
+        if [ "$move_status" != 99 ]; then
+          echo "Moving to $message"
+          cd "$message"
+          else
+          echo "aliases not found in config ~/.pindah"
+        fi
     elif [ "$first_argument" = "save" ]; then
         pindah "$@"
     elif [ "$first_argument" = "--help" ]; then
         pindah --help
+    elif [ "$first_argument" = "list" ]; then
+        cat ~/.pindah
     else
-        # Invalid first argument
         echo "Invalid first argument: $first_argument"
     fi
 }
