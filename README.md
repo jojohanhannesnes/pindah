@@ -17,8 +17,9 @@ Workaround = direct bash
 # How to use
 
 ```
-p save {{directory alias name}} saving the config to `$HOME/.pindah`
-p move {{asd}} move to the alias directory if exist
+p save {{directory alias name}} = saving the config to `$HOME/.pindah`
+p move {{asd}} = move to the alias directory if exist
+p list = cat config file .pindah
 ```
 
 https://github.com/jojohanhannesnes/pindah/assets/118413317/a49e25b7-aea9-4284-815a-14ef0b46c0a4
