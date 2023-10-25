@@ -1,7 +1,8 @@
-export PATH="$PATH:/path/to/release"
-
-// copy this to your .bashrc or .zshrc
-function {{alias}}() {
+cargo build --release
+path="${PWD}/target/release/pindah"
+printf '%s' "$path"
+function='
+function p() {
 if [ $# -ge 2 ]
     first_argument="$1"
     if [ "$first_argument" = "move" ]; then
@@ -23,3 +24,5 @@ if [ $# -ge 2 ]
         echo "Invalid first argument: $first_argument"
     fi
 }
+'
+echo "# Pindah\nexport PATH=\"\$PATH:${path}\"\n${function}" >> ~/.zshrc

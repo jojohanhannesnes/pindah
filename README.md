@@ -14,6 +14,10 @@ Workaround = direct bash
 3. cargo build --release
 4. Add releases to $PATH
 
+# Installation
+```
+./install (if not working just "chmod +x install" or smth)
+```
 # How to use
 
 ```
