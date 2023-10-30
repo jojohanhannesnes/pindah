@@ -7,13 +7,6 @@ This approach doesn't change the working directory of your current shell session
 <br>
 Workaround = direct bash
 
-# Config
-
-1. Copy the bash function to your .zshrc or .bashrc
-2. Customize the alias according to your preferences for the command.
-3. cargo build --release
-4. Add releases to $PATH
-
 # Installation
 ```
 ./install (if not working just "chmod +x install" or smth)
