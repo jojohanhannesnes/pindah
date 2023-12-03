@@ -1,5 +1,5 @@
 cargo build --release
-path="${PWD}/target/release/pindah"
+path="${PWD}/target/release"
 printf '%s' "$path"
 function='
 function p() {
